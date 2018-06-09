@@ -49,5 +49,5 @@ if __name__ == '__main__':
     rospy.Subscriber("/speech", String, callback)
     rospy.Subscriber("/diagnostics", DiagnosticArray, diagnostics)
 
-    app.run(host='0.0.0.0', threaded=True)
+    app.run(host='0.0.0.0')
     rospy.spin()

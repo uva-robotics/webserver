@@ -1,52 +1,44 @@
 #!/usr/bin/python
 
-"""Example: Use showWebview Method"""
-
 import rospy
-import qi
-import argparse
+from naoqi_driver.naoqi_node import NaoqiNode
+from distutils.version import LooseVersion
 import sys
 import time
 
 
+class Tablet(NaoqiNode):
+    def __init__(self):
+        NaoqiNode.__init__(self, 'naoqi_tablet')
+        self.connectNaoQi()
+        rospy.loginfo("naoqi_webserver initialized")
 
-def main(session):
-    """
-    This example uses the showWebview method.
-    To Test ALTabletService, you need to run the script ON the robot.
-    """
-    # Get the service ALTabletService.
+    def connectNaoQi(self):
+        rospy.loginfo("Connecting to NaoQi at %s:%d", self.pip, self.pport)
+        self.systemProxy = self.get_proxy("ALSystem")
+        if self.systemProxy is None:
+            rospy.logerr("Could not get a proxy to ALSystem")
+            exit(1)
+        else:
+            if LooseVersion(self.systemProxy.systemVersion()) < LooseVersion("2.4"):
+                rospy.logerr("Naoqi version of your robot is " + str(self.systemProxy.systemVersion()) + ", which doesn't have a proxy to ALBackgroundMovement.")
+                exit(1)
+            else:
+                self.tabletService = self.get_proxy("ALTabletService")
+                if self.tabletService is None:
+                    rospy.logerr("Could not get a proxy to ALBackgroundMovement.")
+                    exit(1)
+                else:
+                    self.tablet()
 
-    try:
-        tabletService = session.service("ALTabletService")
+    def tablet(self):
+        try:
+            self.tabletService.enableWifi()
+            self.tabletService.showWebview("http://127.0.0.1:5000")
+        except Exception, e:
+            rospy.logerr("Tablet error: ", e)
 
-        # Ensure that the tablet wifi is enable
-        tabletService.enableWifi()
 
-        # Display a web page on the tablet
-        tabletService.showWebview("http://127.0.0.1:5000")
-
-        # tabletService.hideWebview()
-    except Exception, e:
-        print "Error was: ", e
-
-    rospy.init_node('tablet', anonymous=True)
+if __name__ == '__main__':
+    tablet = Tablet()
     rospy.spin()
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--ip", type=str, default="127.0.0.1",
-                        help="Robot IP address. On robot or Local Naoqi: use '127.0.0.1'.")
-    parser.add_argument("--port", type=int, default=9559,
-                        help="Naoqi port number")
-
-    args = parser.parse_args()
-    session = qi.Session()
-    try:
-        session.connect("tcp://" + args.ip + ":" + str(args.port))
-    except RuntimeError:
-        print ("Can't connect to Naoqi at ip \"" + args.ip + "\" on port " + str(args.port) +".\n"
-               "Please check your script arguments. Run with -h option for help.")
-        sys.exit(1)
-    main(session)

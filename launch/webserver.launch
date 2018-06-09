@@ -1,0 +1,8 @@
+<launch>
+
+  <arg name="nao_ip" default="$(optenv NAO_IP 127.0.0.1)" />
+  <arg name="nao_port" default="$(optenv NAO_PORT 9559)" />
+
+  <node name="webserver_tablet" pkg="webserver" type="tablet.py" args="--pip=$(arg nao_ip) --pport=$(arg nao_port)" output="screen"/>
+  <node name="webserver" pkg="webserver" type="webserver.py" output="screen"/>
+</launch>
