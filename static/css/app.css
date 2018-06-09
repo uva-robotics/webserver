@@ -1,0 +1,22 @@
+html, body {
+  background-color: #161616;
+  color: white;
+  font-family: sans-serif;
+  height: 100%;
+}
+
+
+.align {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: inherit;
+}
+
+.center {
+  max-width: 50%;
+}
+
+.speech_text {
+  margin-top: 200px;
+}

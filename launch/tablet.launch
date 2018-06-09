@@ -1,0 +1,4 @@
+<launch>
+  <node name="webserver_tablet" pkg="webserver" type="tablet.py" output="screen"/>
+  <node name="webserver" pkg="webserver" type="webserver.py" output="screen"/>
+</launch>
