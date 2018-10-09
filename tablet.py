@@ -32,9 +32,11 @@ class Tablet(NaoqiNode):
                     self.tablet()
 
     def tablet(self):
+        print("TABLET")
         try:
             self.tabletService.enableWifi()
-            self.tabletService.showWebview("http://127.0.0.1:5000")
+            time.sleep(5)
+            self.tabletService.showWebview("http://146.50.60.55:5010")
         except Exception, e:
             rospy.logerr("Tablet error: ", e)
 
